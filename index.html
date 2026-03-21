@@ -120,7 +120,6 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     });
 });
 
-// MODAL
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modal-title');
 const modalImg = document.getElementById('modal-img');
@@ -137,12 +136,13 @@ function openModal(repoName){
         modalImg.src = `https://raw.githubusercontent.com/flavstn/${repoName}/main/preview.png`;
         modalImg.onerror = () => { modalImg.src='assets/images/default.png'; };
         modalLink.href = `https://github.com/flavstn/${repoName}`;
-        modal.style.display = 'block';
+        modal.classList.add('open'); // deslizamiento
     });
 }
 
-closeModal.onclick = () => { modal.style.display='none'; }
-window.onclick = (e) => { if(e.target==modal) modal.style.display='none'; }
+// Cerrar panel
+closeModal.onclick = () => { modal.classList.remove('open'); }
+window.onclick = (e) => { if(e.target==modal) modal.classList.remove('open'); }
 
 </script>
 </body>
