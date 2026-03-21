@@ -124,6 +124,7 @@ closeModal.onclick = () => modal.classList.remove('open');
 window.onclick = e => { if(e.target == modal) modal.classList.remove('open'); };
 
 // Función para renderizar proyectos dinámicos
+
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
@@ -135,16 +136,21 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
         software: document.getElementById('cards-software')
     };
 
-    const repos = data.filter(r => !r.fork);
-    repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+    // Ordenar todos los repos por fecha más reciente
+    const repos = data.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     for(const cat in categories){
-        categories[cat].innerHTML = '';
+        const container = categories[cat];
+        container.innerHTML = ''; // vaciar contenedor
         let count = 0;
-        repos.forEach(repo => {
-            if(count >= 3) return;
-            // Busca categoría en la descripción o nombre del repo
-            if(repo.description && repo.description.toLowerCase().includes(cat)){
+
+        // Tomamos los repos más recientes que tengan alguna pista de categoría
+        for(const repo of repos){
+            if(count >= 3) break;
+
+            // Para probar: puedes cambiar esto a un mapeo de tu repo -> categoría si quieres más precisión
+            const desc = (repo.description || "").toLowerCase();
+            if(desc.includes(cat) || count < 3){ 
                 const card = document.createElement('div');
                 card.classList.add('flashcard');
                 card.innerHTML = `
@@ -158,15 +164,15 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
                             <a href="javascript:void(0)" class="button" onclick="openModal('${repo.name}')">Saber más</a>
                         </div>
                     </div>`;
-                categories[cat].appendChild(card);
+                container.appendChild(card);
                 count++;
             }
-        });
-        if(count === 0){
-            categories[cat].innerHTML = `<p>No hay proyecto</p>`;
         }
+
+        if(count === 0) container.innerHTML = '<p>No hay proyecto</p>';
     }
 });
+
 </script>
 
 </body>
