@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<title>Portfolio</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <nav class="navbar">
     <div class="nav-left">
         <a href="#home" class="nav-logo">Home</a>
+        <a href="#proyectos" class="nav-logo">Proyectos recientes</a>
         <a href="#proyectos" class="nav-logo">Portfolio</a>
     </div>
     <div class="nav-right">
@@ -25,48 +26,54 @@
     </div>
 </nav>
 
-<!-- HEADER / CV -->
 <header id="home" class="hero">
     <div class="hero-left">
         <h1>Nombre Apellido</h1>
         <h2>Estudiante de Ingeniería – Robótica & Control</h2>
-        <p>
-            Breve descripción sobre ti. Tecnologías, intereses, lo que haces...
-        </p>
+        <p>Breve descripción sobre ti. Tecnologías, intereses, lo que haces...</p>
         <div class="hero-buttons">
             <a href="#proyectos" class="button">Ver proyectos</a>
             <a href="#" class="button-outline">GitHub</a>
         </div>
     </div>
-
     <div class="hero-right">
         <img src="assets/images/profile.jpg" alt="Foto perfil">
     </div>
 </header>
 
-<!-- PROYECTOS RECIENTES -->
 <section id="proyectos">
     <h2>Proyectos Recientes</h2>
 
     <h3>Electrónica</h3>
-    <div class="cards-container" id="electronic-container"></div>
+    <div id="electronic-container" class="cards-container"></div>
 
     <h3>Mecatrónica</h3>
-    <div class="cards-container" id="mechatronic-container"></div>
+    <div id="mechatronic-container" class="cards-container"></div>
 
     <h3>Software</h3>
-    <div class="cards-container" id="software-container"></div>
+    <div id="software-container" class="cards-container"></div>
 </section>
 
-<!-- CONTACTO -->
 <section class="contact">
     <h2>Contacto</h2>
     <p>Email: correo@ejemplo.com</p>
-    <p>GitHub: <a href="#">github.com/flavstn</a></p>
+    <p>GitHub: <a href="#">github.com/usuario</a></p>
     <p>LinkedIn: <a href="#">linkedin.com/in/usuario</a></p>
 </section>
 
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span id="close-modal" class="close">&times;</span>
+    <h2 id="modal-title">Proyecto</h2>
+    <img id="modal-img" src="" alt="">
+    <div id="modal-desc"></div>
+    <a id="modal-link" href="" target="_blank" class="button">Ver repositorio</a>
+  </div>
+</div>
+
 <script>
+// contenedores de categorías
 const categories = {
     electronica: document.getElementById('electronic-container'),
     mecatronica: document.getElementById('mechatronic-container'),
@@ -74,66 +81,69 @@ const categories = {
 };
 
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
-    headers: { Accept: "application/vnd.github.mercy-preview+json" }
+  headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
 .then(res => res.json())
 .then(data => {
-    const repos = data.filter(repo => !repo.fork);
-
-    // Separar por categoría usando etiquetas
     const categorized = { electronica: [], mecatronica: [], software: [] };
-    repos.forEach(repo => {
+    data.filter(r => !r.fork).forEach(repo => {
         const topics = repo.topics || [];
         if(topics.includes('electronica')) categorized.electronica.push(repo);
         else if(topics.includes('mecatronica')) categorized.mecatronica.push(repo);
         else if(topics.includes('software')) categorized.software.push(repo);
     });
 
-    // Para cada categoría, mostrar máximo 3 proyectos
     Object.keys(categorized).forEach(cat => {
-        // Ordenar por fecha de actualización
-        categorized[cat].sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+        categorized[cat].sort((a,b) => new Date(b.updated_at)-new Date(a.updated_at));
         const container = categories[cat];
-
-        for(let i=0; i<3; i++){
+        for(let i=0;i<3;i++){
             let repo = categorized[cat][i];
-            const card = document.createElement('div');
+            let card = document.createElement('div');
             card.classList.add('flashcard');
-
             if(repo){
                 card.innerHTML = `
-                    <div class="flashcard-inner">
-                        <div class="front">
-                            <h3>${repo.name}</h3>
-                            <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png"
-                                 onerror="this.src='assets/images/default.png'" alt="${repo.name}">
-                        </div>
-                        <div class="back">
-                            <p>${repo.description || 'Sin descripción'}</p>
-                            <a href="proyecto.html?repo=${repo.name}" target="_blank" class="button">Saber más</a>
-                            <a href="${repo.html_url}" target="_blank" class="button button-outline">Ver repositorio</a>
-                        </div>
+                <div class="flashcard-inner">
+                    <div class="front">
+                        <h3>${repo.name}</h3>
+                        <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
                     </div>
-                `;
+                    <div class="back">
+                        <p>${repo.description || 'Sin descripción'}</p>
+                        <a href="#" class="button" onclick="openModal('${repo.name}')">Saber más</a>
+                    </div>
+                </div>`;
             } else {
-                card.innerHTML = `
-                    <div class="flashcard-inner">
-                        <div class="front">
-                            <h3>No hay proyecto</h3>
-                            <img src="assets/images/default.png" alt="No hay proyecto">
-                        </div>
-                        <div class="back">
-                            <p>Este espacio está vacío.</p>
-                        </div>
-                    </div>
-                `;
+                card.innerHTML = `<div class="flashcard-inner"><div class="front"><h3>No hay proyecto</h3></div></div>`;
             }
-
             container.appendChild(card);
         }
     });
 });
-</script>
 
+// MODAL
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modal-title');
+const modalImg = document.getElementById('modal-img');
+const modalDesc = document.getElementById('modal-desc');
+const modalLink = document.getElementById('modal-link');
+const closeModal = document.getElementById('close-modal');
+
+function openModal(repoName){
+    fetch(`https://raw.githubusercontent.com/flavstn/${repoName}/main/README.md`)
+    .then(res => res.text())
+    .then(text => {
+        modalTitle.textContent = repoName;
+        modalDesc.textContent = text || 'Sin descripción';
+        modalImg.src = `https://raw.githubusercontent.com/flavstn/${repoName}/main/preview.png`;
+        modalImg.onerror = () => { modalImg.src='assets/images/default.png'; };
+        modalLink.href = `https://github.com/flavstn/${repoName}`;
+        modal.style.display = 'block';
+    });
+}
+
+closeModal.onclick = () => { modal.style.display='none'; }
+window.onclick = (e) => { if(e.target==modal) modal.style.display='none'; }
+
+</script>
 </body>
 </html>
