@@ -5,15 +5,12 @@
     box-sizing: border-box;
 }
 
-
-
 body {
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #0f172a, #020617);
     color: #e2e8f0;
     line-height: 1.6;
 }
-
 
 /* NAVBAR */
 .navbar {
@@ -91,10 +88,6 @@ body {
 }
 
 /* PARA QUE EL HEADER NO QUEDE DEBAJO DEL NAVBAR */
-header {
-    padding-top: 80px; /* ajusta según altura navbar */
-}
-
 header {
     padding-top: 100px; /* ajusta según altura navbar */
 }
@@ -189,7 +182,6 @@ header {
     background: #1e293b;
 }
 
-
 header h1 {
     font-size: 3rem;
     background: linear-gradient(to right, #38bdf8, #06b6d4);
@@ -241,7 +233,7 @@ section h3 {
 .flashcard-inner {
     position: relative;
     width: 100%;
-    height: 250px; /* fija la altura */
+    height: 250px; /* altura total de la card */
     transition: transform 0.6s;
     transform-style: preserve-3d;
 }
@@ -276,6 +268,13 @@ section h3 {
     text-align: center;
 }
 
+.flashcard .front img {
+    width: 100%;
+    height: 150px; /* altura fija, ajustable */
+    object-fit: cover; /* recorta si es necesario */
+    border-radius: 8px;
+}
+
 .flashcard .button {
     margin-top: 10px;
     padding: 6px 14px;
@@ -290,13 +289,7 @@ section h3 {
 .flashcard .button:hover {
     background: #38bdf8;
 }
-.flashcard .front img {
-    width: 100%;
-    height: auto;
-    max-height: 150px; /* ajustable */
-    object-fit: cover;
-    border-radius: 8px;
-}
+
 /* CONTACTO */
 section.contact p, section.contact a {
     font-size: 1rem;
