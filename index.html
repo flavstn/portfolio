@@ -8,12 +8,12 @@
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-left">
         <a href="#home" class="nav-logo">Home</a>
         <a href="#proyectos" class="nav-logo">Proyectos recientes</a>
         <a href="#proyectos" class="nav-logo">Portfolio</a>
-
     </div>
     <div class="nav-right">
         <div class="dropdown">
@@ -26,80 +26,35 @@
         </div>
     </div>
 </nav>
-    
 
-    
 <!-- HEADER / CV -->
 <header id="home" class="hero">
     <div class="hero-left">
         <h1>Nombre Apellido</h1>
         <h2>Estudiante de Ingeniería – Robótica & Control</h2>
-        <p>
-            Breve descripción sobre ti. Tecnologías, intereses, lo que haces...
-        </p>
-
+        <p>Breve descripción sobre ti. Tecnologías, intereses, lo que haces...</p>
         <div class="hero-buttons">
             <a href="#proyectos" class="button">Ver proyectos</a>
             <a href="#" class="button-outline">GitHub</a>
         </div>
     </div>
-
     <div class="hero-right">
         <img src="assets/images/profile.jpg" alt="Foto perfil">
     </div>
 </header>
+
 <!-- PROYECTOS RECIENTES -->
-<section>
+<section id="proyectos">
     <h2>Proyectos Recientes</h2>
 
     <h3>Electrónica</h3>
-    <div class="cards-container">
-       <div class="flashcard">
-    <div class="flashcard-inner">
-        <div class="front">
-            <h3>Proyecto E1</h3>
-            <p>Electrónica</p>
-        </div>
-        <div class="back">
-            <p>Mini resumen del proyecto E1...</p>
-            <a href="#" class="button">Saber más</a>
-        </div>
-    </div>
-</div>
-
-    </div>
+    <div class="cards-container" id="electronica"></div>
 
     <h3>Mecatrónica</h3>
-    <div class="cards-container">
-        <div class="flashcard">
-    <div class="flashcard-inner">
-        <div class="front">
-            <h3>Proyecto E1</h3>
-            <p>Electrónica</p>
-        </div>
-        <div class="back">
-            <p>Mini resumen del proyecto E1...</p>
-            <a href="#" class="button">Saber más</a>
-        </div>
-    </div>
-</div>
-    </div>
+    <div class="cards-container" id="mecatronica"></div>
 
     <h3>Software</h3>
-    <div class="cards-container">
-       <div class="flashcard">
-    <div class="flashcard-inner">
-        <div class="front">
-            <h3>Proyecto E1</h3>
-            <p>Electrónica</p>
-        </div>
-        <div class="back">
-            <p>Mini resumen del proyecto E1...</p>
-            <a href="#" class="button">Saber más</a>
-        </div>
-    </div>
-</div>
-    </div>
+    <div class="cards-container" id="software"></div>
 </section>
 
 <!-- CONTACTO -->
@@ -110,44 +65,49 @@
     <p>LinkedIn: <a href="#">linkedin.com/in/usuario</a></p>
 </section>
 
+<!-- SCRIPT AUTOMÁTICO -->
 <script>
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
-  headers: {
-    Accept: "application/vnd.github.mercy-preview+json"
-  }
+  headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
 .then(res => res.json())
 .then(data => {
-    const container = document.querySelector('.cards-container');
 
-    // Filtrar solo proyectos que no sean forks
-    const repos = data.filter(repo => !repo.fork);
-
-    if(repos.length === 0) return;
+    // Filtrar solo repos no forks
+    const repos = data.filter(r => !r.fork);
 
     // Ordenar por fecha de actualización (más reciente primero)
-    repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
 
-    // Solo tomamos el más reciente
-    const repo = repos[0];
+    // Recorrer cada repo
+    repos.forEach(repo => {
+        // Determinar categoría por topic
+        let category = "otros";
+        if(repo.topics.includes("electronica")) category = "electronica";
+        else if(repo.topics.includes("mecatronica")) category = "mecatronica";
+        else if(repo.topics.includes("software")) category = "software";
+        else return; // si no coincide, lo ignoramos
 
-    const card = document.createElement('div');
-    card.classList.add('flashcard');
+        const container = document.getElementById(category);
 
-    card.innerHTML = `
-        <div class="flashcard-inner">
-            <div class="front">
-                <h3>${repo.name}</h3>
-                <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
+        const card = document.createElement('div');
+        card.classList.add('flashcard');
+
+        card.innerHTML = `
+            <div class="flashcard-inner">
+                <div class="front">
+                    <h3>${repo.name}</h3>
+                    <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
+                </div>
+                <div class="back">
+                    <p>${repo.description || 'Sin descripción'}</p>
+                    <a href="${repo.html_url}" target="_blank" class="button">Saber más</a>
+                </div>
             </div>
-            <div class="back">
-                <p>${repo.description || 'Sin descripción'}</p>
-                <a href="${repo.html_url}" target="_blank" class="button">Saber más</a>
-            </div>
-        </div>
-    `;
+        `;
 
-    container.appendChild(card);
+        container.appendChild(card);
+    });
 });
 </script>
     
