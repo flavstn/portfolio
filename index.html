@@ -110,5 +110,49 @@
     <p>LinkedIn: <a href="#">linkedin.com/in/usuario</a></p>
 </section>
 
+<script>
+fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
+  headers: {
+    Accept: "application/vnd.github.mercy-preview+json"
+  }
+})
+.then(res => res.json())
+.then(data => {
+
+    const container = document.querySelector('.cards-container');
+
+    data.forEach(repo => {
+
+        if(repo.fork) return;
+
+        console.log(repo.topics); // para comprobar
+
+        let category = "otros";
+
+        if(repo.topics.includes("electronica")) category = "electronica";
+        else if(repo.topics.includes("mecatronica")) category = "mecatronica";
+        else if(repo.topics.includes("software")) category = "software";
+
+        const card = document.createElement('div');
+        card.classList.add('flashcard');
+
+        card.innerHTML = `
+            <div class="flashcard-inner">
+                <div class="front">
+                    <h3>${repo.name}</h3>
+                    <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png">
+                </div>
+                <div class="back">
+                    <p>${repo.description || 'Sin descripción'}</p>
+                    <a href="${repo.html_url}" target="_blank" class="button">Saber más</a>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+});
+</script>
+    
 </body>
 </html>
