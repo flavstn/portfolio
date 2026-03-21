@@ -137,22 +137,35 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     };
 
     // Ordenar todos los repos por fecha más reciente
+   fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
+    headers: { Accept: "application/vnd.github.mercy-preview+json" }
+})
+.then(res => res.json())
+.then(data => {
+    const categories = {
+        electronica: document.getElementById('cards-electronica'),
+        mecatronica: document.getElementById('cards-mecatronica'),
+        software: document.getElementById('cards-software')
+    };
+
+    // Solo repos que no sean forks y ordenados por fecha más reciente
     const repos = data.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     for(const cat in categories){
         const container = categories[cat];
-        container.innerHTML = ''; // vaciar contenedor
+        container.innerHTML = '';
         let count = 0;
 
-        // Tomamos los repos más recientes que tengan alguna pista de categoría
-        for(const repo of repos){
-            if(count >= 3) break;
+        // Filtrar repos por categoría
+        const filtered = repos.filter(repo => (repo.description || "").toLowerCase().includes(cat));
 
-            // Para probar: puedes cambiar esto a un mapeo de tu repo -> categoría si quieres más precisión
-            const desc = (repo.description || "").toLowerCase();
-            if(desc.includes(cat) || count < 3){ 
-                const card = document.createElement('div');
-                card.classList.add('flashcard');
+        // Tomar hasta 3 repos por categoría
+        for(let i = 0; i < 3; i++){
+            const repo = filtered[i];
+            const card = document.createElement('div');
+            card.classList.add('flashcard');
+
+            if(repo){
                 card.innerHTML = `
                     <div class="flashcard-inner">
                         <div class="front">
@@ -164,15 +177,22 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
                             <a href="javascript:void(0)" class="button" onclick="openModal('${repo.name}')">Saber más</a>
                         </div>
                     </div>`;
-                container.appendChild(card);
-                count++;
+            } else {
+                // Rellenar con "No hay proyecto" si falta
+                card.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="front">
+                            <h3>No hay proyecto</h3>
+                        </div>
+                        <div class="back">
+                            <p>No hay proyecto disponible</p>
+                        </div>
+                    </div>`;
             }
+            container.appendChild(card);
         }
-
-        if(count === 0) container.innerHTML = '<p>No hay proyecto</p>';
     }
 });
-
 </script>
 
 </body>
