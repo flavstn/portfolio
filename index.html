@@ -47,9 +47,15 @@
 <!-- PROYECTOS RECIENTES -->
 <section id="proyectos">
     <h2>Proyectos Recientes</h2>
-    <div class="cards-container">
-        <!-- Flashcards se generan automáticamente aquí -->
-    </div>
+
+    <h3>Electrónica</h3>
+    <div class="cards-container" id="electronic-container"></div>
+
+    <h3>Mecatrónica</h3>
+    <div class="cards-container" id="mechatronic-container"></div>
+
+    <h3>Software</h3>
+    <div class="cards-container" id="software-container"></div>
 </section>
 
 <!-- CONTACTO -->
@@ -61,44 +67,71 @@
 </section>
 
 <script>
+const categories = {
+    electronica: document.getElementById('electronic-container'),
+    mecatronica: document.getElementById('mechatronic-container'),
+    software: document.getElementById('software-container')
+};
+
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
-  headers: {
-    Accept: "application/vnd.github.mercy-preview+json"
-  }
+    headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
 .then(res => res.json())
 .then(data => {
-    const container = document.querySelector('.cards-container');
-
-    // Filtrar solo proyectos que no sean forks
     const repos = data.filter(repo => !repo.fork);
 
-    if(repos.length === 0) return;
+    // Separar por categoría usando etiquetas
+    const categorized = { electronica: [], mecatronica: [], software: [] };
+    repos.forEach(repo => {
+        const topics = repo.topics || [];
+        if(topics.includes('electronica')) categorized.electronica.push(repo);
+        else if(topics.includes('mecatronica')) categorized.mecatronica.push(repo);
+        else if(topics.includes('software')) categorized.software.push(repo);
+    });
 
-    // Ordenar por fecha de actualización (más reciente primero)
-    repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    // Para cada categoría, mostrar máximo 3 proyectos
+    Object.keys(categorized).forEach(cat => {
+        // Ordenar por fecha de actualización
+        categorized[cat].sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+        const container = categories[cat];
 
-    // Solo tomamos el más reciente
-    const repo = repos[0];
+        for(let i=0; i<3; i++){
+            let repo = categorized[cat][i];
+            const card = document.createElement('div');
+            card.classList.add('flashcard');
 
-    const card = document.createElement('div');
-    card.classList.add('flashcard');
+            if(repo){
+                card.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="front">
+                            <h3>${repo.name}</h3>
+                            <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png"
+                                 onerror="this.src='assets/images/default.png'" alt="${repo.name}">
+                        </div>
+                        <div class="back">
+                            <p>${repo.description || 'Sin descripción'}</p>
+                            <a href="proyecto.html?repo=${repo.name}" target="_blank" class="button">Saber más</a>
+                            <a href="${repo.html_url}" target="_blank" class="button button-outline">Ver repositorio</a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="front">
+                            <h3>No hay proyecto</h3>
+                            <img src="assets/images/default.png" alt="No hay proyecto">
+                        </div>
+                        <div class="back">
+                            <p>Este espacio está vacío.</p>
+                        </div>
+                    </div>
+                `;
+            }
 
-    card.innerHTML = `
-        <div class="flashcard-inner">
-            <div class="front">
-                <h3>${repo.name}</h3>
-                <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
-            </div>
-            <div class="back">
-                <p>${repo.description || 'Sin descripción'}</p>
-                <a href="proyecto.html?repo=${repo.name}" target="_blank" class="button">Saber más</a>
-                <a href="${repo.html_url}" target="_blank" class="button button-outline">Ver repositorio</a>
-            </div>
-        </div>
-    `;
-
-    container.appendChild(card);
+            container.appendChild(card);
+        }
+    });
 });
 </script>
 
