@@ -290,7 +290,13 @@ section h3 {
 .flashcard .button:hover {
     background: #38bdf8;
 }
-
+.flashcard .front img {
+    width: 100%;
+    height: auto;
+    max-height: 150px; /* ajustable */
+    object-fit: cover;
+    border-radius: 8px;
+}
 /* CONTACTO */
 section.contact p, section.contact a {
     font-size: 1rem;
