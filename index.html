@@ -141,7 +141,7 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     for(const cat in categories){
         const container = categories[cat];
         container.innerHTML = '';
-        let filtered = repos.filter(repo => (repo.description || "").toLowerCase().includes(cat));
+        let filtered = repos.filter(repo => (repo.topics || "").toLowerCase().includes(cat));
         
         // Asegurarse de que haya siempre 3 slots
         while(filtered.length < 3) filtered.push(null);
