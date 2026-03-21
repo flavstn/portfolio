@@ -100,7 +100,7 @@ function openModal(repoName){
     const pdfUrl = `https://raw.githubusercontent.com/flavstn/${repoName}/main/project.pdf`;
     fetch(pdfUrl).then(res => {
         if(res.ok){
-            modalPDF.innerHTML = `<iframe src="${pdfUrl}"></iframe>`;
+            modalPDF.innerHTML = `<iframe src="${pdfUrl}" style="width:100%; height:400px;"></iframe>`;
         } else { modalPDF.innerHTML = `<p>No hay PDF disponible.</p>`; }
     });
 
@@ -110,7 +110,7 @@ function openModal(repoName){
     fetch(videoUrl).then(res => {
         if(res.ok){
             modalVideo.innerHTML = `<p>A continuación, el funcionamiento en un video:</p>
-                                    <video controls>
+                                    <video controls style="width:100%;">
                                         <source src="${videoUrl}" type="video/mp4">
                                     </video>`;
         } else { modalVideo.innerHTML = `<p>No hay video disponible.</p>`; }
@@ -135,18 +135,17 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
         software: document.getElementById('cards-software')
     };
 
-    // Solo repos que no sean forks y ordenados por fecha más reciente
+    // Repos que no sean forks, ordenados por fecha más reciente
     const repos = data.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     for(const cat in categories){
         const container = categories[cat];
         container.innerHTML = '';
-        let count = 0;
+        let filtered = repos.filter(repo => (repo.description || "").toLowerCase().includes(cat));
+        
+        // Asegurarse de que haya siempre 3 slots
+        while(filtered.length < 3) filtered.push(null);
 
-        // Filtrar repos por categoría
-        const filtered = repos.filter(repo => (repo.description || "").toLowerCase().includes(cat));
-
-        // Tomar hasta 3 repos por categoría
         for(let i = 0; i < 3; i++){
             const repo = filtered[i];
             const card = document.createElement('div');
@@ -165,7 +164,6 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
                         </div>
                     </div>`;
             } else {
-                // Rellenar con "No hay proyecto" si falta
                 card.innerHTML = `
                     <div class="flashcard-inner">
                         <div class="front">
@@ -180,8 +178,6 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
         }
     }
 });
-
- 
 </script>
 
 </body>
