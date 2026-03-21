@@ -118,39 +118,36 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
 })
 .then(res => res.json())
 .then(data => {
-
     const container = document.querySelector('.cards-container');
 
-    data.forEach(repo => {
+    // Filtrar solo proyectos que no sean forks
+    const repos = data.filter(repo => !repo.fork);
 
-        if(repo.fork) return;
+    if(repos.length === 0) return;
 
-        console.log(repo.topics); // para comprobar
+    // Ordenar por fecha de actualización (más reciente primero)
+    repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
-        let category = "otros";
+    // Solo tomamos el más reciente
+    const repo = repos[0];
 
-        if(repo.topics.includes("electronica")) category = "electronica";
-        else if(repo.topics.includes("mecatronica")) category = "mecatronica";
-        else if(repo.topics.includes("software")) category = "software";
+    const card = document.createElement('div');
+    card.classList.add('flashcard');
 
-        const card = document.createElement('div');
-        card.classList.add('flashcard');
-
-        card.innerHTML = `
-            <div class="flashcard-inner">
-                <div class="front">
-                    <h3>${repo.name}</h3>
-                    <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png">
-                </div>
-                <div class="back">
-                    <p>${repo.description || 'Sin descripción'}</p>
-                    <a href="${repo.html_url}" target="_blank" class="button">Saber más</a>
-                </div>
+    card.innerHTML = `
+        <div class="flashcard-inner">
+            <div class="front">
+                <h3>${repo.name}</h3>
+                <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
             </div>
-        `;
+            <div class="back">
+                <p>${repo.description || 'Sin descripción'}</p>
+                <a href="${repo.html_url}" target="_blank" class="button">Saber más</a>
+            </div>
+        </div>
+    `;
 
-        container.appendChild(card);
-    });
+    container.appendChild(card);
 });
 </script>
     
