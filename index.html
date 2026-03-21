@@ -124,20 +124,7 @@ closeModal.onclick = () => modal.classList.remove('open');
 window.onclick = e => { if(e.target == modal) modal.classList.remove('open'); };
 
 // Función para renderizar proyectos dinámicos
-
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
-    headers: { Accept: "application/vnd.github.mercy-preview+json" }
-})
-.then(res => res.json())
-.then(data => {
-    const categories = {
-        electronica: document.getElementById('cards-electronica'),
-        mecatronica: document.getElementById('cards-mecatronica'),
-        software: document.getElementById('cards-software')
-    };
-
-    // Ordenar todos los repos por fecha más reciente
-   fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
 .then(res => res.json())
@@ -193,6 +180,8 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
         }
     }
 });
+
+ 
 </script>
 
 </body>
