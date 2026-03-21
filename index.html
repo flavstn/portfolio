@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Portfolio</title>
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-left">
-        <a href="#home" class="nav-logo">Home</a>
-        <a href="#proyectos" class="nav-logo">Proyectos recientes</a>
-        <a href="#proyectos" class="nav-logo">Portfolio</a>
+        <a href="#home">Home</a>
+        <a href="#proyectos">Proyectos recientes</a>
     </div>
     <div class="nav-right">
         <div class="dropdown">
@@ -26,6 +26,7 @@
     </div>
 </nav>
 
+<!-- HERO / CV -->
 <header id="home" class="hero">
     <div class="hero-left">
         <h1>Nombre Apellido</h1>
@@ -41,109 +42,132 @@
     </div>
 </header>
 
+<!-- PROYECTOS -->
 <section id="proyectos">
     <h2>Proyectos Recientes</h2>
 
     <h3>Electrónica</h3>
-    <div id="electronic-container" class="cards-container"></div>
+    <div class="cards-container" id="cards-electronica"></div>
 
     <h3>Mecatrónica</h3>
-    <div id="mechatronic-container" class="cards-container"></div>
+    <div class="cards-container" id="cards-mecatronica"></div>
 
     <h3>Software</h3>
-    <div id="software-container" class="cards-container"></div>
+    <div class="cards-container" id="cards-software"></div>
 </section>
 
+<!-- CONTACTO -->
 <section class="contact">
     <h2>Contacto</h2>
     <p>Email: correo@ejemplo.com</p>
-    <p>GitHub: <a href="#">github.com/usuario</a></p>
+    <p>GitHub: <a href="#">github.com/flavstn</a></p>
     <p>LinkedIn: <a href="#">linkedin.com/in/usuario</a></p>
 </section>
 
-<!-- MODAL -->
+<!-- PANEL LATERAL -->
 <div id="modal" class="modal">
-  <div class="modal-content">
     <span id="close-modal" class="close">&times;</span>
-    <h2 id="modal-title">Proyecto</h2>
-    <img id="modal-img" src="" alt="">
-    <div id="modal-desc"></div>
-    <a id="modal-link" href="" target="_blank" class="button">Ver repositorio</a>
-  </div>
+    <h2 id="modal-title">Título</h2>
+    <img id="modal-img" src="" alt="Preview del proyecto">
+    <div id="modal-desc">Resumen del README.md...</div>
+    <div id="modal-pdf"></div>
+    <div id="modal-video"></div>
+    <a id="modal-link" href="#" target="_blank" class="button">Ver repositorio</a>
 </div>
 
 <script>
-// contenedores de categorías
-const categories = {
-    electronica: document.getElementById('electronic-container'),
-    mecatronica: document.getElementById('mechatronic-container'),
-    software: document.getElementById('software-container')
-};
-
-fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
-  headers: { Accept: "application/vnd.github.mercy-preview+json" }
-})
-.then(res => res.json())
-.then(data => {
-    const categorized = { electronica: [], mecatronica: [], software: [] };
-    data.filter(r => !r.fork).forEach(repo => {
-        const topics = repo.topics || [];
-        if(topics.includes('electronica')) categorized.electronica.push(repo);
-        else if(topics.includes('mecatronica')) categorized.mecatronica.push(repo);
-        else if(topics.includes('software')) categorized.software.push(repo);
-    });
-
-    Object.keys(categorized).forEach(cat => {
-        categorized[cat].sort((a,b) => new Date(b.updated_at)-new Date(a.updated_at));
-        const container = categories[cat];
-        for(let i=0;i<3;i++){
-            let repo = categorized[cat][i];
-            let card = document.createElement('div');
-            card.classList.add('flashcard');
-            if(repo){
-                card.innerHTML = `
-                <div class="flashcard-inner">
-                    <div class="front">
-                        <h3>${repo.name}</h3>
-                        <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
-                    </div>
-                    <div class="back">
-                        <p>${repo.description || 'Sin descripción'}</p>
-                        <a href="#" class="button" onclick="openModal('${repo.name}')">Saber más</a>
-                    </div>
-                </div>`;
-            } else {
-                card.innerHTML = `<div class="flashcard-inner"><div class="front"><h3>No hay proyecto</h3></div></div>`;
-            }
-            container.appendChild(card);
-        }
-    });
-});
-
+// Función para abrir panel lateral
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modal-title');
 const modalImg = document.getElementById('modal-img');
 const modalDesc = document.getElementById('modal-desc');
+const modalPDF = document.getElementById('modal-pdf');
+const modalVideo = document.getElementById('modal-video');
 const modalLink = document.getElementById('modal-link');
 const closeModal = document.getElementById('close-modal');
 
 function openModal(repoName){
+    modalTitle.textContent = repoName;
+    modalImg.src = `https://raw.githubusercontent.com/flavstn/${repoName}/main/preview.png`;
+    modalImg.onerror = () => { modalImg.src='assets/images/default.png'; };
+
     fetch(`https://raw.githubusercontent.com/flavstn/${repoName}/main/README.md`)
     .then(res => res.text())
-    .then(text => {
-        modalTitle.textContent = repoName;
-        modalDesc.textContent = text || 'Sin descripción';
-        modalImg.src = `https://raw.githubusercontent.com/flavstn/${repoName}/main/preview.png`;
-        modalImg.onerror = () => { modalImg.src='assets/images/default.png'; };
-        modalLink.href = `https://github.com/flavstn/${repoName}`;
-        modal.classList.add('open'); // deslizamiento
+    .then(text => modalDesc.textContent = text || 'No hay descripción disponible.');
+
+    // PDF
+    modalPDF.innerHTML = '';
+    const pdfUrl = `https://raw.githubusercontent.com/flavstn/${repoName}/main/project.pdf`;
+    fetch(pdfUrl).then(res => {
+        if(res.ok){
+            modalPDF.innerHTML = `<iframe src="${pdfUrl}"></iframe>`;
+        } else { modalPDF.innerHTML = `<p>No hay PDF disponible.</p>`; }
     });
+
+    // Video
+    modalVideo.innerHTML = '';
+    const videoUrl = `https://raw.githubusercontent.com/flavstn/${repoName}/main/demo.mp4`;
+    fetch(videoUrl).then(res => {
+        if(res.ok){
+            modalVideo.innerHTML = `<p>A continuación, el funcionamiento en un video:</p>
+                                    <video controls>
+                                        <source src="${videoUrl}" type="video/mp4">
+                                    </video>`;
+        } else { modalVideo.innerHTML = `<p>No hay video disponible.</p>`; }
+    });
+
+    modalLink.href = `https://github.com/flavstn/${repoName}`;
+    modal.classList.add('open');
 }
 
-// Cerrar panel
-closeModal.onclick = () => { modal.classList.remove('open'); }
-window.onclick = (e) => { if(e.target==modal) modal.classList.remove('open'); }
+closeModal.onclick = () => modal.classList.remove('open');
+window.onclick = e => { if(e.target == modal) modal.classList.remove('open'); };
 
+// Función para renderizar proyectos dinámicos
+fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
+    headers: { Accept: "application/vnd.github.mercy-preview+json" }
+})
+.then(res => res.json())
+.then(data => {
+    const categories = {
+        electronica: document.getElementById('cards-electronica'),
+        mecatronica: document.getElementById('cards-mecatronica'),
+        software: document.getElementById('cards-software')
+    };
+
+    const repos = data.filter(r => !r.fork);
+    repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    for(const cat in categories){
+        categories[cat].innerHTML = '';
+        let count = 0;
+        repos.forEach(repo => {
+            if(count >= 3) return;
+            // Busca categoría en la descripción o nombre del repo
+            if(repo.description && repo.description.toLowerCase().includes(cat)){
+                const card = document.createElement('div');
+                card.classList.add('flashcard');
+                card.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="front">
+                            <h3>${repo.name}</h3>
+                            <img src="https://raw.githubusercontent.com/flavstn/${repo.name}/main/preview.png" alt="${repo.name}">
+                        </div>
+                        <div class="back">
+                            <p>${repo.description || 'Sin descripción'}</p>
+                            <a href="javascript:void(0)" class="button" onclick="openModal('${repo.name}')">Saber más</a>
+                        </div>
+                    </div>`;
+                categories[cat].appendChild(card);
+                count++;
+            }
+        });
+        if(count === 0){
+            categories[cat].innerHTML = `<p>No hay proyecto</p>`;
+        }
+    }
+});
 </script>
+
 </body>
 </html>
