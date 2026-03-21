@@ -76,7 +76,7 @@
 </div>
 
 <script>
-// Función para abrir panel lateral
+// PANEL LATERAL
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modal-title');
 const modalImg = document.getElementById('modal-img');
@@ -95,36 +95,22 @@ function openModal(repoName){
     .then(res => res.text())
     .then(text => modalDesc.textContent = text || 'No hay descripción disponible.');
 
-// PDF
-const pdfUrl = `https://raw.githubusercontent.com/flavstn/${repoName}/main/project.pdf`;
-fetch(pdfUrl).then(res => {
-    if(res.ok){
-        modalPDF.innerHTML = `<iframe src="${pdfUrl}" width="100%" height="400px"></iframe>`;
-    } else {
-        modalPDF.innerHTML = `<p>No hay PDF disponible.</p>`;
-    }
-});
+    // PDF
+    modalPDF.innerHTML = `<iframe src="https://raw.githubusercontent.com/flavstn/${repoName}/main/project.pdf"></iframe>`;
 
-// Video
-const videoUrl = `https://raw.githubusercontent.com/flavstn/${repoName}/main/demo.mp4`;
-fetch(videoUrl).then(res => {
-    if(res.ok){
-        modalVideo.innerHTML = `
-            <p>A continuación, el funcionamiento en un video:</p>
-            <video controls width="100%">
-                <source src="${videoUrl}" type="video/mp4">
-            </video>
-        `;
-    } else {
-        modalVideo.innerHTML = `<p>No hay video disponible.</p>`;
-    }
-});
+    // Video
+    modalVideo.innerHTML = `<video controls>
+                                <source src="https://raw.githubusercontent.com/flavstn/${repoName}/main/demo.mp4" type="video/mp4">
+                            </video>`;
+
+    modalLink.href = `https://github.com/flavstn/${repoName}`;
+    modal.classList.add('open');
 }
 
 closeModal.onclick = () => modal.classList.remove('open');
 window.onclick = e => { if(e.target == modal) modal.classList.remove('open'); };
 
-// Función para renderizar proyectos dinámicos
+// RENDERIZAR PROYECTOS DINÁMICOS
 fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
     headers: { Accept: "application/vnd.github.mercy-preview+json" }
 })
@@ -136,18 +122,14 @@ fetch('https://api.github.com/users/flavstn/repos?per_page=100', {
         software: document.getElementById('cards-software')
     };
 
-    // Repos que no sean forks, ordenados por fecha más reciente
     const repos = data.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     for(const cat in categories){
         const container = categories[cat];
         container.innerHTML = '';
-        //let filtered = repos.filter(repo => (repo.topics || "").toLowerCase().includes(cat));
-        // Filtrar por categoría usando topics
-        const filtered = repos.filter(repo => repo.topics.includes(cat));
-        // Asegurarse de que haya siempre 3 slots
-        while(filtered.length < 3) filtered.push(null);
 
+        const filtered = repos.filter(repo => (repo.topics || []).includes(cat));
+        
         for(let i = 0; i < 3; i++){
             const repo = filtered[i];
             const card = document.createElement('div');
