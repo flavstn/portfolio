@@ -302,33 +302,30 @@ section.contact a:hover {
     color: #38bdf8;
 }
 
-/* MODAL */
+/* PANEL DESLIZABLE */
 .modal {
-    display: none;
     position: fixed;
     z-index: 2000;
-    left: 0;
     top: 0;
-    width: 100%;
+    right: -100%; /* fuera de la pantalla */
+    width: 400px; /* ancho del panel */
+    max-width: 80%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.8);
+    background-color: #1e293b;
+    color: #e2e8f0;
+    overflow-y: auto;
+    transition: right 0.4s ease;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    padding: 20px;
 }
 
-.modal-content {
-    background-color: #1e293b;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 15px;
-    width: 80%;
-    max-width: 700px;
-    text-align: center;
-    color: #e2e8f0;
+.modal.open {
+    right: 0; /* se desliza a la vista */
 }
 
 .modal-content img {
     width: 100%;
-    max-height: 300px;
+    max-height: 200px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -336,9 +333,9 @@ section.contact a:hover {
 
 .close {
     color: #38bdf8;
-    float: right;
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
+    float: right;
 }
 
 .close:hover {
