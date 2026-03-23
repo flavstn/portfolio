@@ -107,8 +107,21 @@ function openModal(repoName){
     modal.classList.add('open');
 }*/
 
-    function openModal(repoName){
+  function openModal(repoName){
 
+    // 🔹 TÍTULO
+    modalTitle.textContent = repoName;
+
+    // 🔹 IMAGEN (sigue desde GitHub como antes)
+    modalImg.src = `https://raw.githubusercontent.com/flavstn/${repoName}/main/preview.png`;
+    modalImg.onerror = () => { modalImg.src='assets/images/default.png'; };
+
+    // 🔹 README (igual que antes)
+    fetch(`https://raw.githubusercontent.com/flavstn/${repoName}/main/README.md`)
+    .then(res => res.text())
+    .then(text => modalDesc.textContent = text || 'No hay descripción disponible.');
+
+    // 🔹 PDF (AHORA CORREGIDO → LOCAL)
     const pdfPath = `assets/projects/${repoName}/project.pdf`;
 
     modalPDF.innerHTML = `
@@ -120,6 +133,20 @@ function openModal(repoName){
         </iframe>
     `;
 
+    // 🔹 VIDEO (también local para que funcione)
+    const videoPath = `assets/projects/${repoName}/demo.mp4`;
+
+    modalVideo.innerHTML = `
+        <video controls width="100%">
+            <source src="${videoPath}" type="video/mp4">
+        </video>
+    `;
+
+    // 🔹 LINK REPO
+    modalLink.href = `https://github.com/flavstn/${repoName}`;
+
+    // 🔥 ABRIR MODAL (esto faltaba)
+    modal.classList.add('open');
 }
 
 closeModal.onclick = () => modal.classList.remove('open');
