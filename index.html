@@ -64,6 +64,7 @@
     <img id="modal-img" src="">
     <div id="modal-desc"></div>
     <div id="modal-pdf"></div>
+    <div id="modal-video"></div>
     <a id="modal-link" target="_blank" class="button">Ver repo</a>
 </div>
 
@@ -73,6 +74,7 @@ const modalTitle = document.getElementById('modal-title');
 const modalImg = document.getElementById('modal-img');
 const modalDesc = document.getElementById('modal-desc');
 const modalPDF = document.getElementById('modal-pdf');
+const modalVideo = document.getElementById('modal-video');    
 const modalLink = document.getElementById('modal-link');
 const closeModal = document.getElementById('close-modal');
 
@@ -119,6 +121,56 @@ function openModal(repoName){
       .catch(() => {
             modalPDF.innerHTML = `<p>Error cargando PDF</p>`;
       });
+    //Video
+    // ===== PDF =====
+const pdfURL = `https://flavstn.github.io/${repoName}/project.pdf`;
+
+fetch(pdfURL)
+  .then(res => {
+    if(res.ok){
+        modalPDF.innerHTML = `
+            <h3>📄 Documentación</h3>
+            <iframe 
+                src="${pdfURL}" 
+                width="100%" 
+                height="500px"
+                style="border:none; border-radius:10px;">
+            </iframe>
+
+            <p>
+                <a href="${pdfURL}" target="_blank" class="button">
+                    Abrir PDF
+                </a>
+            </p>
+        `;
+    } else {
+        modalPDF.innerHTML = `<p>No hay documentación disponible</p>`;
+    }
+  })
+  .catch(() => {
+        modalPDF.innerHTML = `<p>Error cargando PDF</p>`;
+  });
+
+
+// ===== VIDEO =====
+const videoURL = `https://flavstn.github.io/${repoName}/demo.mp4`;
+
+fetch(videoURL)
+  .then(res => {
+    if(res.ok){
+        modalVideo.innerHTML = `
+            <h3>🎥 Demo</h3>
+            <video controls width="100%" style="border-radius:10px; margin-top:10px;">
+                <source src="${videoURL}" type="video/mp4">
+            </video>
+        `;
+    } else {
+        modalVideo.innerHTML = `<p>No hay vídeo disponible</p>`;
+    }
+  })
+  .catch(() => {
+        modalVideo.innerHTML = `<p>Error cargando vídeo</p>`;
+  });
 
     modalLink.href = `https://github.com/flavstn/${repoName}`;
 
