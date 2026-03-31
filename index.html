@@ -119,34 +119,10 @@ function openModal(repoName){
       .catch(() => {
             modalPDF.innerHTML = `<p>Error cargando PDF</p>`;
       });
-    // ===== PDF =====
-const pdfURL = `https://flavstn.github.io/${repoName}/project.pdf`;
+    // ===== PDF ==
 
-fetch(pdfURL)
-  .then(res => {
-    if(res.ok){
-        modalPDF.innerHTML = `
-            <h3>📄 Documentación</h3>
-            <iframe 
-                src="${pdfURL}" 
-                width="100%" 
-                height="500px"
-                style="border:none; border-radius:10px;">
-            </iframe>
 
-            <p>
-                <a href="${pdfURL}" target="_blank" class="button">
-                    Abrir PDF
-                </a>
-            </p>
-        `;
-    } else {
-        modalPDF.innerHTML = `<p>No hay documentación disponible</p>`;
-    }
-  })
-  .catch(() => {
-        modalPDF.innerHTML = `<p>Error cargando PDF</p>`;
-  });
+    
     modalLink.href = `https://github.com/flavstn/${repoName}`;
 
     modal.classList.add('open');
