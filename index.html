@@ -122,7 +122,7 @@ function openModal(repoName){
     .then(text => modalDesc.textContent = text || 'No hay descripción disponible.');
 
     // 🔹 PDF (AHORA CORREGIDO → LOCAL)
-    const pdfPath = `assets/projects/${repoName}/project.pdf`;
+    const pdfPath = `projects/${repoName}/project.pdf`;
 
     modalPDF.innerHTML = `
         <iframe 
